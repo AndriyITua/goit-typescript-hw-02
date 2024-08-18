@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import SearchBar from "./components/SearchBar/SearchBar";
 import { fetchPhotos } from "./photos-api";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
@@ -6,19 +6,31 @@ import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
 import ImageModal from "./components/ImageModal/ImageModal";
 import Loader from "./components/Loader/Loader";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
+import { Image } from "./App.types";
+
+export const perPage: number = 18; // Кількість зображень що повертаються з API за один запит
 
 export default function App() {
-  const [photos, setPhotos] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [photos, setPhotos] = useState<Image[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
 
-  const [page, setPage] = useState(1);
-  const [query, setQuery] = useState("");
+  const [page, setPage] = useState<number>(1);
+  const [query, setQuery] = useState<string>("");
 
-  const [modalIsOpen, setIsOpen] = useState(false);
-  const [currentImage, setCurrentImage] = useState("");
+  const [modalIsOpen, setIsOpen] = useState<boolean>(false);
+  const [currentImage, setCurrentImage] = useState<Image | null>(null);
 
-  const handleSearch = (newQuery) => {
+  // Реалізація плавного скролу при додаванні нових зображень
+  const firstNewImageRef = useRef<HTMLLIElement | null>(null);
+
+  useEffect((): void => {
+    // firstNewImageRef.current && firstNewImageRef.current.scrollIntoView({ behavior: "smooth" });
+    // Використання оператора опціональної послідовності ?. замість &&
+    firstNewImageRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [photos]);
+
+  const handleSearch = (newQuery: string) => {
     if (newQuery === query) {
       return;
     }
@@ -27,16 +39,16 @@ export default function App() {
     setPhotos([]);
   };
 
-  const handleLoadMore = () => {
+  const handleLoadMore = (): void => {
     setPage(page + 1);
   };
 
-  const openModal = (image) => {
+  const openModal = (image: Image): void => {
     setCurrentImage(image);
     setIsOpen(true);
   };
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     setIsOpen(false);
   };
 
@@ -68,10 +80,15 @@ export default function App() {
     <div>
       <SearchBar onSearch={handleSearch} />
       {photos.length > 0 && (
-        <ImageGallery openModal={openModal} items={photos} />
+        <ImageGallery
+          ref={firstNewImageRef}
+          openModal={openModal}
+          items={photos}
+          perPage={perPage}
+        />
       )}
       {error && <ErrorMessage />}
-      {isLoading && <Loader />}
+      {isLoading && <Loader loading={isLoading} />}
       {!isLoading && photos.length > 0 && (
         <LoadMoreBtn onClick={handleLoadMore} />
       )}
