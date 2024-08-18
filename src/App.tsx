@@ -19,7 +19,7 @@ export default function App() {
   const [query, setQuery] = useState<string>("");
 
   const [modalIsOpen, setIsOpen] = useState<boolean>(false);
-  const [currentImage, setCurrentImage] = useState<Image | null>(null);
+  const [currentImage, setCurrentImage] = useState<string>("");
 
   // Реалізація плавного скролу при додаванні нових зображень
   const firstNewImageRef = useRef<HTMLLIElement | null>(null);
@@ -43,7 +43,7 @@ export default function App() {
     setPage(page + 1);
   };
 
-  const openModal = (image: Image): void => {
+  const openModal = (image: string): void => {
     setCurrentImage(image);
     setIsOpen(true);
   };

@@ -5,7 +5,7 @@ import css from "./ImageGallery.module.css";
 
 interface ForwardRefProps {
   items: Image[];
-  openModal: (item: Image) => void;
+  openModal: (item: string) => void;
   perPage: number;
   ref?: React.Ref<HTMLLIElement>;
 }
