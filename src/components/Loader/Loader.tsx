@@ -8,12 +8,7 @@ interface LoaderProps {
 const Loader: React.FC<LoaderProps> = ({ loading }) => {
   return (
     <div className={css.loader}>
-      <RotatingLines
-        visible={loading}
-        height="30"
-        width="30"
-        strokeColor="blue"
-      />
+      <RotatingLines visible={loading} width="30" strokeColor="blue" />
       <p className={css.text}>loading, please wait</p>
     </div>
   );
